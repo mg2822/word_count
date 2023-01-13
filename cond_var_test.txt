@@ -1,0 +1,217 @@
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <condition_variable>
+#include <thread>
+#include <chrono>
+#include <vector>
+#include <string>
+
+ // This mutex is used for three purposes:
+                 // 1) to synchronize accesses to i
+                 // 2) to synchronize accesses to std::cerr
+                 // 3) for the condition variable cv
+std::vector<std::string> q;
+
+
+
+void waits(int id, std::condition_variable& cv, std::mutex& cv_m )
+{
+    std::unique_lock<std::mutex> lk(cv_m);
+    std::cout << "Waiting id: " << id << std::endl;
+    cv.wait(lk, []{return !q.empty();});
+    
+    
+    auto i = q.back();
+    auto lid = id;
+    q.pop_back();
+    lk.unlock();
+    //std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cout << "received from id : " << id << " " << "value " << i << std::endl;
+}
+
+void signals(std::condition_variable& cv, std::mutex& cv_m)
+{
+    //std::cerr <<"Waiting 2 sec before notify all" << std::endl;
+    //std::this_thread::sleep_for(std::chrono::seconds(2));
+    {
+        std::lock_guard<std::mutex> lk(cv_m);
+        std::cerr << "pushing data to vector" << std::endl;
+        q.push_back("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        q.push_back("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+        q.push_back("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+        q.push_back("DDDDDDD");
+        q.push_back("EEEEE");
+        q.push_back("FFFFFF");
+        
+    }
+    //std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cerr << "Notifying all\n";
+    cv.notify_all();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    cv.notify_all();
+
+    // std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    // {
+    //     std::lock_guard<std::mutex> lk(cv_m);
+    //     i = 1;
+    //     std::cerr << "Notifying again...\n";
+    // }
+    // cv.notify_all();
+}
+
+int main()
+{
+    std::condition_variable cv;
+    std::mutex cv_m;
+    std::thread t1(waits,1, std::ref(cv), std::ref(cv_m)), t2(waits,2, std::ref(cv), std::ref(cv_m)), t3(waits,3, std::ref(cv), std::ref(cv_m)), t4(signals, std::ref(cv), std::ref(cv_m));
+    t1.join(); 
+    t2.join(); 
+    t3.join();
+    t4.join();
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <condition_variable>
+#include <thread>
+#include <chrono>
+#include <vector>
+#include <string>
+
+ // This mutex is used for three purposes:
+                 // 1) to synchronize accesses to i
+                 // 2) to synchronize accesses to std::cerr
+                 // 3) for the condition variable cv
+std::vector<std::string> q;
+bool finished;
+
+
+
+
+void waits(int id, std::condition_variable& cv, std::mutex& cv_m )
+{
+    
+    while(true)
+    {
+    std::unique_lock<std::mutex> lk(cv_m);
+    std::cerr << "Waiting id: " << id << std::endl;
+    cv.wait(lk, []{return (!q.empty() || finished);});
+    if(finished)
+        break;
+    
+    auto i = q.back();
+    q.pop_back();
+
+    //std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cerr << "received from id : " << id << " " << "value " << i << std::endl;
+    lk.unlock();
+
+    //std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+
+// void signals(std::condition_variable& cv, std::mutex& cv_m)
+// {
+//     //std::cerr <<"Waiting 2 sec before notify all" << std::endl;
+//     //std::this_thread::sleep_for(std::chrono::seconds(2));
+//     {
+//         std::lock_guard<std::mutex> lk(cv_m);
+//         std::cerr << "pushing data to vector" << std::endl;
+//         q.push_back("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//         q.push_back("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+//         q.push_back("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+
+//     }
+//     //std::this_thread::sleep_for(std::chrono::seconds(1));
+//     std::cerr << "Notifying all\n";
+//     cv.notify_all();
+    
+
+
+
+// }
+
+int main()
+{
+    std::condition_variable cv;
+    std::mutex cv_m;
+    finished = false;
+
+    std::thread t1(waits,1, std::ref(cv), std::ref(cv_m)), t2(waits,2, std::ref(cv), std::ref(cv_m)), t3(waits,3, std::ref(cv), std::ref(cv_m));//, t4(signals, std::ref(cv), std::ref(cv_m));
+        int count = 0;
+        while(count <= 6)
+        {
+            std::lock_guard<std::mutex> lk(cv_m);
+
+            q.push_back("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            q.push_back("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+            q.push_back("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+            count += 3;
+            std::cerr << "inserted 3 items\n";
+            std::cerr << "Notify all\n";
+            cv.notify_all();
+            //std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+        
+                
+            while(true)
+            {
+                bool end = false;
+                {
+                std::lock_guard<std::mutex> lk(cv_m);
+                if(q.empty())
+                    finished = true;
+                    
+                    
+                }
+                if(finished)
+                {
+                cv.notify_all();
+                break;
+                }
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+    //std::this_thread::sleep_for(std::chrono::seconds(1));
+    t1.join(); 
+    t2.join(); 
+    t3.join();
+    //t4.join();
+}
+
+
+
+}
+
