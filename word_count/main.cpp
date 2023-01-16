@@ -31,5 +31,10 @@ int main(int argc, char** argv)
 		std::cout << "Caught exception: " << e.what();
 		return 2;
 	}
+	catch (...)
+	{
+		std::cout << "Unknown exception caught";
+		abort();
+	}
 	return 0;
 }

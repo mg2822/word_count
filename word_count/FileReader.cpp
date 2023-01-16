@@ -1,7 +1,5 @@
 #include "FileReader.h"
 
-
-
 FileReader::FileReader(const char* path) : filePath(path)
 {
 	isFilePathExist = fs::exists(filePath);
@@ -25,7 +23,7 @@ FileReader::~FileReader()
 	}
 }
 
-vector<string> FileReader::read(unsigned int numOfLines)
+vector<string> FileReader::read(size_t numOfLines)
 {
 	vector<string> result{};
 	if (inFile.is_open() )

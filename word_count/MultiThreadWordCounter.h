@@ -15,6 +15,6 @@ private:
 	void fillBuffer(vector<vector<string>>& buffer, unique_ptr<FileReader>& reader);
 public:
 	virtual ~MultiThreadWordCounter();
-	virtual unsigned int countWords(const char* path) override;
+	unsigned int countWords(const char* path) override;
 
 };

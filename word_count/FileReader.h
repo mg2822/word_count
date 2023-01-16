@@ -16,6 +16,6 @@ private:
 public:
 	FileReader(const char* path);
 	virtual ~FileReader();
-	vector<string>  read(unsigned int numOfLines);
+	vector<string>  read(size_t numOfLines);
 	static unsigned int getFileSize(const char * path);
 };

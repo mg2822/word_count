@@ -9,5 +9,5 @@ public:
 
 public:
 	SingleThreadWordCounter() = default;
-	virtual unsigned int countWords(const char* path);
+	unsigned int countWords(const char* path) override;
 };

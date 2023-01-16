@@ -1,4 +1,5 @@
 #include "TextProcessor.h"
+
 using namespace std;
 
 string const TextProcessor::delimiters_ = { '\x20', '\x09', '\x0a', '\x0b', '\x0c', '\x0d' };
